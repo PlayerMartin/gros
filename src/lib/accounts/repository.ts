@@ -1,9 +1,9 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { EventType, type EventRow } from "../events/types";
 
 /** Raw account_created events for a user, in creation order. */
 export function getAccountCreatedEvents(
-  db: Database.Database,
+  db: Database,
   userId: string
 ): EventRow[] {
   const rows = db
@@ -16,7 +16,7 @@ export function getAccountCreatedEvents(
 
 /** Raw account_closed events for a user, in creation order. */
 export function getAccountClosedEvents(
-  db: Database.Database,
+  db: Database,
   userId: string
 ): EventRow[] {
   const rows = db
@@ -29,7 +29,7 @@ export function getAccountClosedEvents(
 
 /** Transfer events affecting a given account. */
 export function getTransfersForAccount(
-  db: Database.Database,
+  db: Database,
   userId: string,
   accountId: string
 ): EventRow[] {

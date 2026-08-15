@@ -1,8 +1,9 @@
 # Architecture
 
 Single Next.js process using the app router. Internal API routes handle data
-operations. better-sqlite3 provides synchronous SQLite access with WAL mode
-enabled for concurrent read safety during writes.
+operations. bun:sqlite (built into the Bun runtime) provides synchronous SQLite
+access with WAL mode plus a 5 s busy timeout for concurrent read safety during
+writes.
 
 ## Separation of concerns
 
@@ -15,10 +16,10 @@ core logic.
 
 ```
 lib/
-├── auth.ts                  # Better Auth configuration
+├── auth.ts                  # Better Auth configuration (bun:sqlite dialect)
 ├── auth-client.ts           # Client-side Better Auth instance (`better-auth/react`)
 ├── api-utils.ts             # Auth + error helpers for API route handlers
-├── db.ts                    # SQLite connection (WAL mode, singleton)
+├── db.ts                    # bun:sqlite connection (WAL, busy_timeout, singleton)
 ├── schema.ts                # Table creation & migrations (app + auth tables)
 ├── settings.ts              # Primary-currency settings helpers
 ├── events/

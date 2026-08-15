@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { getDb } from "../db";
 import {
   upsertRate,
@@ -31,7 +31,7 @@ function parseEcbXml(xml: string): ParsedRate[] {
  * as fromCurrency EUR -> toCurrency <CCY>.
  */
 export async function fetchDailyRates(
-  db: Database.Database = getDb()
+  db: Database = getDb()
 ): Promise<RateInfo | null> {
   const res = await fetch(ECB_URL, { cache: "no-store" });
   if (!res.ok) {
@@ -63,7 +63,7 @@ export interface RateInfo {
  * True if a rate is available for today; else false (callers may trigger a
  * refresh).
  */
-export function hasTodayRate(db: Database.Database): boolean {
+export function hasTodayRate(db: Database): boolean {
   return !!getLatestRate(db, "EUR", "CZK");
 }
 
@@ -73,7 +73,7 @@ export function hasTodayRate(db: Database.Database): boolean {
  * Handles EUR<->CZK and identity conversions; falls back to EUR pivot.
  */
 export function convertCurrency(
-  db: Database.Database,
+  db: Database,
   amount: number,
   from: string,
   to: string,
@@ -92,7 +92,7 @@ export function convertCurrency(
 }
 
 function conversionFactor(
-  db: Database.Database,
+  db: Database,
   from: string,
   to: string,
   date: string

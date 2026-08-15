@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { EventType } from "../events/types";
 
 export interface TagRow {
@@ -8,19 +8,19 @@ export interface TagRow {
   createdAt: string;
 }
 
-export function listTags(db: Database.Database, userId: string): TagRow[] {
+export function listTags(db: Database, userId: string): TagRow[] {
   const rows = db
     .prepare("SELECT * FROM tags WHERE userId = ? ORDER BY name ASC")
     .all(userId);
   return rows as TagRow[];
 }
 
-export function getTag(db: Database.Database, id: string): TagRow | null {
+export function getTag(db: Database, id: string): TagRow | null {
   return (db.prepare("SELECT * FROM tags WHERE id = ?").get(id) as TagRow) ?? null;
 }
 
 export function getTagByName(
-  db: Database.Database,
+  db: Database,
   userId: string,
   name: string
 ): TagRow | null {
@@ -30,7 +30,7 @@ export function getTagByName(
   );
 }
 
-export function insertTag(db: Database.Database, tag: TagRow): void {
+export function insertTag(db: Database, tag: TagRow): void {
   db.prepare("INSERT INTO tags (id, userId, name, createdAt) VALUES (?, ?, ?, ?)").run(
     tag.id,
     tag.userId,
@@ -40,20 +40,20 @@ export function insertTag(db: Database.Database, tag: TagRow): void {
 }
 
 export function renameTag(
-  db: Database.Database,
+  db: Database,
   id: string,
   name: string
 ): void {
   db.prepare("UPDATE tags SET name = ? WHERE id = ?").run(name, id);
 }
 
-export function deleteTagRow(db: Database.Database, id: string): void {
+export function deleteTagRow(db: Database, id: string): void {
   db.prepare("DELETE FROM tags WHERE id = ?").run(id);
 }
 
 /** Number of live transactions referencing a tag (voided ones excluded). */
 export function countTransactionsForTag(
-  db: Database.Database,
+  db: Database,
   userId: string,
   tagId: string
 ): number {

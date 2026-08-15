@@ -8,7 +8,7 @@ import { ensureSettings } from "./settings";
 migrate(getDb());
 
 export const auth = betterAuth({
-  // better-sqlite3 is supported natively — pass the Database instance directly.
+  // bun:sqlite is supported natively — pass the Database instance directly.
   database: getDb(),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,

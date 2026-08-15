@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { getDb } from "../db";
 import { listEventsForReplay } from "../events/service";
 import { EventType, type EventRow } from "../events/types";
@@ -33,7 +33,7 @@ function isVoided(events: EventRow[], eventId: string): boolean {
  * account's currency to get native amounts without exchange-rate lookups).
  */
 export function spendingByTag(
-  db: Database.Database,
+  db: Database,
   userId: string,
   filters: DashboardFilters = {},
   currency?: string
@@ -94,7 +94,7 @@ export interface BalancePoint {
  * given — pass the filtered account's currency for native values.
  */
 export function balanceHistory(
-  db: Database.Database,
+  db: Database,
   userId: string,
   filters: DashboardFilters = {},
   currency?: string

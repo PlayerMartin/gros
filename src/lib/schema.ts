@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { getDb } from "./db";
 
 /**
@@ -8,8 +8,14 @@ import { getDb } from "./db";
  * fields, nullable where not applicable) plus three supporting tables:
  * tags, exchange_rates, and settings.
  */
-export function migrate(db: Database.Database = getDb()): void {
-  db.exec(`
+export function migrate(db: Database = getDb()): void {
+  // First-run schema creation can race from several processes concurrently
+  // (e.g. `next build` collects page data with worker processes). Run the DDL
+  // inside one transaction so readers never observe a partial schema, and rely
+  // on the connection's busy_timeout to serialize concurrent writers.
+  db.exec("BEGIN");
+  try {
+    db.exec(`
     CREATE TABLE IF NOT EXISTS events (
       id                  TEXT PRIMARY KEY,
       sequenceNumber      INTEGER NOT NULL,
@@ -102,4 +108,9 @@ export function migrate(db: Database.Database = getDb()): void {
       updatedAt  TIMESTAMP
     );
   `);
+    db.exec("COMMIT");
+  } catch (err) {
+    db.exec("ROLLBACK");
+    throw err;
+  }
 }

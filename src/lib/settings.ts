@@ -1,11 +1,11 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { getDb } from "./db";
 
 export const DEFAULT_CURRENCY = "EUR";
 
 /** Primary currency for a user (used to convert dashboard displays). */
 export function getPrimaryCurrency(
-  db: Database.Database,
+  db: Database,
   userId: string
 ): string {
   const row = db
@@ -15,7 +15,7 @@ export function getPrimaryCurrency(
 }
 
 export function setPrimaryCurrency(
-  db: Database.Database,
+  db: Database,
   userId: string,
   currency: string
 ): void {
@@ -29,7 +29,7 @@ export function setPrimaryCurrency(
 }
 
 /** Seed a user's settings row on registration (idempotent). */
-export function ensureSettings(db: Database.Database, userId: string): void {
+export function ensureSettings(db: Database, userId: string): void {
   const row = db
     .prepare("SELECT userId FROM settings WHERE userId = ?")
     .get(userId);

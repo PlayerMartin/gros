@@ -1,4 +1,0 @@
-# pnpm v10 blocks dependency build scripts by default.
-# Approve better-sqlite3 so its prebuilt native binary is fetched on install.
-onlyBuiltDependencies:
-  - better-sqlite3

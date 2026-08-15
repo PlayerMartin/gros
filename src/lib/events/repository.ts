@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { getDb } from "../db";
 import { EventType, type Direction, type EventRow, type NewEvent } from "./types";
 
@@ -25,7 +25,7 @@ function toRow(r: any): EventRow {
   };
 }
 
-function nextSequence(db: Database.Database): number {
+function nextSequence(db: Database): number {
   const row = db
     .prepare(
       "SELECT COALESCE(MAX(sequenceNumber), 0) AS max FROM events"
@@ -39,41 +39,40 @@ function nextSequence(db: Database.Database): number {
  * A payload object is serialized to JSON.
  * Returns the full stored row.
  */
-export function insertEvent(db: Database.Database, e: NewEvent): EventRow {
+export function insertEvent(db: Database, e: NewEvent): EventRow {
   const id = e.id ?? randomUUID();
   const sequenceNumber = nextSequence(db);
   const createdAt = new Date().toISOString();
   db.prepare(
     `INSERT INTO events (${COLS}) VALUES (
-      @id, @sequenceNumber, @userId, @eventType, @accountId, @amount, @direction,
-      @tagId, @date, @transferToAccountId, @note, @originalEventId, @payload, @createdAt
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )`
-  ).run({
+  ).run(
     id,
     sequenceNumber,
-    userId: e.userId,
-    eventType: e.eventType,
-    accountId: e.accountId ?? null,
-    amount: e.amount ?? null,
-    direction: e.direction ?? null,
-    tagId: e.tagId ?? null,
-    date: e.date ?? null,
-    transferToAccountId: e.transferToAccountId ?? null,
-    note: e.note ?? null,
-    originalEventId: e.originalEventId ?? null,
-    payload: e.payload ? JSON.stringify(e.payload) : null,
+    e.userId,
+    e.eventType,
+    e.accountId ?? null,
+    e.amount ?? null,
+    e.direction ?? null,
+    e.tagId ?? null,
+    e.date ?? null,
+    e.transferToAccountId ?? null,
+    e.note ?? null,
+    e.originalEventId ?? null,
+    e.payload ? JSON.stringify(e.payload) : null,
     createdAt,
-  });
+  );
   return getEventById(db, id)!;
 }
 
-export function getEventById(db: Database.Database, id: string): EventRow | null {
+export function getEventById(db: Database, id: string): EventRow | null {
   const row = db.prepare(`SELECT ${COLS} FROM events WHERE id = ?`).get(id);
   return row ? toRow(row) : null;
 }
 
 /** All events for a user, ordered by sequence. */
-export function listEventsByUser(db: Database.Database, userId: string): EventRow[] {
+export function listEventsByUser(db: Database, userId: string): EventRow[] {
   const rows = db
     .prepare(`SELECT ${COLS} FROM events WHERE userId = ? ORDER BY sequenceNumber ASC`)
     .all(userId);
@@ -81,7 +80,7 @@ export function listEventsByUser(db: Database.Database, userId: string): EventRo
 }
 
 /** Returns true if the given event id has been voided. */
-export function isVoided(db: Database.Database, eventId: string): boolean {
+export function isVoided(db: Database, eventId: string): boolean {
   const row = db
     .prepare(
       "SELECT 1 AS x FROM events WHERE originalEventId = ? AND eventType = ?"
@@ -96,7 +95,7 @@ export function isVoided(db: Database.Database, eventId: string): boolean {
  * WHERE NOT EXISTS subquery.
  */
 export function listLiveTransactions(
-  db: Database.Database,
+  db: Database,
   userId: string
 ): EventRow[] {
   const rows = db

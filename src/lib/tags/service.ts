@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { getDb } from "../db";
 import { insertEvent } from "../events/repository";
 import { EventType } from "../events/types";
@@ -18,7 +18,7 @@ export const DEFAULT_TAG = "Uncategorized";
 
 /** Seed the default "Uncategorized" tag on registration (idempotent). */
 export function seedDefaultTag(
-  db: Database.Database,
+  db: Database,
   userId: string
 ): TagRow {
   const existing = getTagByName(db, userId, DEFAULT_TAG);
@@ -28,7 +28,7 @@ export function seedDefaultTag(
 
 /** Create a tag (validates name + uniqueness), appending a tag_created event. */
 export function createTag(
-  db: Database.Database,
+  db: Database,
   userId: string,
   name: string
 ): TagRow {
@@ -50,14 +50,14 @@ export function createTag(
 }
 
 export function listTagsForUser(
-  db: Database.Database,
+  db: Database,
   userId: string
 ): TagRow[] {
   return listTags(db, userId);
 }
 
 export function renameTag(
-  db: Database.Database,
+  db: Database,
   userId: string,
   tagId: string,
   newName: string
@@ -79,7 +79,7 @@ export function renameTag(
  * transaction.
  */
 export function deleteTag(
-  db: Database.Database,
+  db: Database,
   userId: string,
   tagId: string
 ): void {

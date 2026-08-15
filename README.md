@@ -1,7 +1,8 @@
 # Fold · Personal Finance
 
-A self-hosted, open-source personal finance tracker. Single Next.js process,
-one SQLite database — no containers, no external services.
+A self-hosted, open-source personal finance tracker. Single Next.js process
+running on the **Bun runtime**, one SQLite database (`bun:sqlite`), deployed
+with Docker in one command.
 
 Built on **event sourcing**: every mutation is an immutable event, and balances
 and reports are derived by replay. Multi-account, multi-currency (EUR/CZK with
@@ -9,14 +10,14 @@ daily ECB rates), multi-user with full isolation.
 
 ## Stack
 
-- **Next.js** 16 (app router) + **TypeScript** + **Tailwind** v4
-- **better-sqlite3** (WAL mode) — event sourcing with a wide typed `events` table
+- **Bun** runtime (dev, build, start) + **Next.js** 16 (app router) + **TypeScript** + **Tailwind** v4
+- **bun:sqlite** (WAL mode, built into the runtime) — no native modules at all
 - **Better Auth** — email/password, SQLite backend
 - **Recharts** — pie + line charts
 
 ## Getting started
 
-Uses **pnpm** exclusively.
+**pnpm** installs, **Bun** runs.
 
 ```bash
 pnpm install
@@ -24,24 +25,27 @@ pnpm install
 # optional: set a real auth secret (see .env.example)
 cp .env.example .env
 
-pnpm dev      # http://localhost:3000
+pnpm dev      # Bun runtime on http://localhost:3000
 ```
 
 The database is created automatically at `data/finance.db` on first run
 (app tables + Better Auth tables + the default "Uncategorized" tag).
 
-> **Native module note:** `better-sqlite3` needs its prebuilt binary. The
-> `onlyBuiltDependencies` entry in `pnpm-workspace.yaml` makes pnpm fetch it on
-> install. See `docs/technical/setup.md` if it ever goes missing.
+## Production with Docker
 
-## Production
+One command:
 
 ```bash
-pnpm build
-pnpm start
+docker compose up -d --build
 ```
 
-Set a real `BETTER_AUTH_SECRET` in production.
+- Listens on port 3000, keeps data in `./data` (bind mount).
+- Requires `BETTER_AUTH_SECRET` in `.env` for production.
+- Container runs as non-root (uid 1000); on Linux hosts run
+  `chown -R 1000:1000 ./data` once.
+
+The multi-stage image installs with pnpm and runs Next.js on Bun — the
+container idles at ~115 MB RSS.
 
 ## Features
 

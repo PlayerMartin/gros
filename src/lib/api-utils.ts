@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 
 /**
  * Resolve the authenticated user for an API route. Returns null on
@@ -30,11 +30,11 @@ export function serverError(error: unknown): NextResponse {
   return NextResponse.json({ error: message }, { status: 500 });
 }
 
-export type Authed<H> = H & { db: Database.Database; userId: string };
+export type Authed<H> = H & { db: Database; userId: string };
 
 /** Wraps a route handler with auth + db, mapping thrown errors to responses. */
 export function withAuth<A, Args extends any[], H>(
-  fn: (args: A, ctx: { db: Database.Database; userId: string; params: H }) => Promise<NextResponse> | NextResponse
+  fn: (args: A, ctx: { db: Database; userId: string; params: H }) => Promise<NextResponse> | NextResponse
 ): (args: A, ctx: { params: Promise<H> }) => Promise<NextResponse> {
   return async (args, rawCtx) => {
     const user = await getSessionUser(

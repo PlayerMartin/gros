@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 
 export interface RateRow {
   date: string;
@@ -9,19 +9,19 @@ export interface RateRow {
 
 /** Upsert a rate (PK on date/from/to). */
 export function upsertRate(
-  db: Database.Database,
+  db: Database,
   rate: RateRow
 ): void {
   db.prepare(
     `INSERT INTO exchange_rates (date, fromCurrency, toCurrency, rate)
-     VALUES (@date, @fromCurrency, @toCurrency, @rate)
+     VALUES (?, ?, ?, ?)
      ON CONFLICT(date, fromCurrency, toCurrency) DO UPDATE SET rate = excluded.rate`
-  ).run(rate);
+  ).run(rate.date, rate.fromCurrency, rate.toCurrency, rate.rate);
 }
 
 /** Rates between two currencies on or before a date (closest in time). */
 export function getClosestRateOnOrBefore(
-  db: Database.Database,
+  db: Database,
   from: string,
   to: string,
   date: string
@@ -38,7 +38,7 @@ export function getClosestRateOnOrBefore(
 
 /** The most recent stored rate for a currency pair. */
 export function getLatestRate(
-  db: Database.Database,
+  db: Database,
   from: string,
   to: string
 ): RateRow | null {

@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { randomUUID } from "crypto";
 import { getDb } from "../db";
 import { insertEvent } from "../events/repository";
@@ -32,7 +32,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 /** Create a bank account via an account_created event. */
 export function createAccount(
-  db: Database.Database,
+  db: Database,
   input: NewAccountInput
 ): Account {
   const payload: AccountPayload = {
@@ -56,7 +56,7 @@ export function createAccount(
 
 /** Close an account via an account_closed event. */
 export function closeAccount(
-  db: Database.Database,
+  db: Database,
   userId: string,
   accountId: string
 ): void {
@@ -69,7 +69,7 @@ export function closeAccount(
 }
 
 /** Derive the full account list for a user from account lifecycle events. */
-export function listAccounts(db: Database.Database, userId: string): Account[] {
+export function listAccounts(db: Database, userId: string): Account[] {
   const created = getAccountCreatedEvents(db, userId);
   const closed = getAccountClosedEvents(db, userId);
   const closedById = new Map(closed.map((c) => [c.accountId, c]));
@@ -103,7 +103,7 @@ function resolveAccount(createdEvent: EventRow, closed: boolean): Account {
  * - date given: historical balance, considering only events on/before that date.
  */
 export function computeBalance(
-  db: Database.Database,
+  db: Database,
   userId: string,
   accountId: string | null = null,
   date: string | null = null

@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Database } from "bun:sqlite";
 import { getDb } from "../db";
 import { insertEvent, listEventsByUser, getEventById, isVoided } from "./repository";
 import { EventType, type EventRow, type NewEvent } from "./types";
@@ -17,7 +17,7 @@ export interface NewTransactionInput {
 
 /** Create a single manual transaction. */
 export function createTransaction(
-  db: Database.Database,
+  db: Database,
   input: NewTransactionInput
 ): EventRow {
   return insertEvent(db, {
@@ -37,7 +37,7 @@ export function createTransaction(
  * transaction event which has not already been voided.
  */
 export function voidTransaction(
-  db: Database.Database,
+  db: Database,
   userId: string,
   originalEventId: string
 ): EventRow {
@@ -65,7 +65,7 @@ export function voidTransaction(
  * The user sees a simple edit; the audit trail records both events.
  */
 export function editTransaction(
-  db: Database.Database,
+  db: Database,
   userId: string,
   originalEventId: string,
   input: NewTransactionInput
@@ -91,7 +91,7 @@ export interface NewTransferInput {
  * The debit event stores a negative signed amount; the credit event positive.
  */
 export function createTransfer(
-  db: Database.Database,
+  db: Database,
   input: NewTransferInput
 ): EventRow {
   const abs = Math.abs(input.amount);
@@ -119,6 +119,6 @@ export function createTransfer(
 }
 
 /** All events for a user in sequence order (used for replay). */
-export function listEventsForReplay(db: Database.Database, userId: string): EventRow[] {
+export function listEventsForReplay(db: Database, userId: string): EventRow[] {
   return listEventsByUser(db, userId);
 }
