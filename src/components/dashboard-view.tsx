@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getDashboard, getTransactions, getTags, deleteTransaction } from "@/lib/api";
+import {
+  getDashboard,
+  getTransactions,
+  getTags,
+  deleteTransaction,
+} from "@/lib/api";
 import { formatCurrency } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import { Card, Spinner } from "@/components/ui/card";
@@ -12,7 +17,12 @@ import { BalanceChart } from "@/components/charts/balance-chart";
 import { TransactionList } from "@/components/transaction-list";
 import { TransactionForm } from "@/components/transaction-form";
 import { OnboardingDialog } from "@/components/onboarding-dialog";
-import type { AccountSummary, DashboardData, Tag, Transaction } from "@/lib/types";
+import type {
+  AccountSummary,
+  DashboardData,
+  Tag,
+  Transaction,
+} from "@/lib/types";
 
 export function DashboardView() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -68,11 +78,42 @@ export function DashboardView() {
     <div className="space-y-4 p-4">
       {/* Balance header */}
       <div className="pt-2">
-        <p className="text-xs uppercase tracking-wide text-muted-2">Total balance</p>
+        <p className="text-xs uppercase tracking-wide text-muted-2">
+          Total balance
+        </p>
         <p className="mt-0.5 text-3xl font-bold tracking-tight">
           {formatCurrency(data?.totalBalance ?? 0, currency)}
         </p>
       </div>
+
+      {/* Per-account totals — each shown in its own currency */}
+      {openAccounts.length > 0 && (
+        <Card>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+            Accounts
+          </p>
+          <ul className="divide-y divide-border">
+            {openAccounts.map((a) => (
+              <li key={a.id} className="flex items-center gap-3 py-2.5">
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={cn(
+                      "text-sm font-medium",
+                      accountFilter === a.id && "text-accent",
+                    )}
+                  >
+                    {a.name}
+                  </p>
+                  <p className="text-xs text-muted-2">{a.currency}</p>
+                </div>
+                <p className="font-mono text-sm font-semibold">
+                  {formatCurrency(a.balance, a.currency)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {/* Account filter chips */}
       {openAccounts.length > 0 && (
@@ -83,7 +124,7 @@ export function DashboardView() {
               "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
               !accountFilter
                 ? "border-accent bg-accent/10 text-accent"
-                : "border-border text-muted hover:text-foreground"
+                : "border-border text-muted hover:text-foreground",
             )}
           >
             All
@@ -96,7 +137,7 @@ export function DashboardView() {
                 "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
                 accountFilter === a.id
                   ? "border-accent bg-accent/10 text-accent"
-                  : "border-border text-muted hover:text-foreground"
+                  : "border-border text-muted hover:text-foreground",
               )}
             >
               {a.name}

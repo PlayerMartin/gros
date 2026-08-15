@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
-import { listAccounts } from "@/lib/accounts/service";
-import { computeBalance } from "@/lib/accounts/service";
+import { listAccounts, computeBalance } from "@/lib/accounts/service";
 import { spendingByTag, balanceHistory } from "@/lib/analytics/service";
 import { getPrimaryCurrency } from "@/lib/settings";
 import { convertCurrency } from "@/lib/exchange-rates/service";
 
 /**
- * Dashboard aggregate: accounts with balances, spending by tag, and balance
- * history, all converted to the user's primary currency.
+ * Dashboard aggregate. Every account keeps its balance in its own currency
+ * (`balance`) plus a converted value (`balancePrimary`), so the UI can show
+ * account totals natively. The top-level `totalBalance` is always expressed
+ * in the user's primary currency: the selected account's converted balance
+ * when a filter is set, otherwise the sum of all open accounts.
  */
 export async function GET(req: NextRequest) {
   const user = await getSessionUser(req.headers);
@@ -21,8 +23,10 @@ export async function GET(req: NextRequest) {
   const to = req.nextUrl.searchParams.get("to");
   const primary = getPrimaryCurrency(db, user.userId);
 
+  // Balances for every account, regardless of filter, so the per-account
+  // list always shows native totals.
   const accounts = listAccounts(db, user.userId);
-  const balances = computeBalance(db, user.userId, accountId);
+  const balances = computeBalance(db, user.userId);
 
   const accountsWithBalance = accounts.map((a) => {
     const raw = balances.perAccount[a.id] ?? 0;
@@ -41,9 +45,10 @@ export async function GET(req: NextRequest) {
   const spending = spendingByTag(db, user.userId, filters);
   const history = balanceHistory(db, user.userId, filters);
 
-  const totalPrimary = accountsWithBalance
-    .filter((a) => !a.closed)
-    .reduce((s, a) => s + a.balancePrimary, 0);
+  const openAccounts = accountsWithBalance.filter((a) => !a.closed);
+  const totalPrimary = accountId
+    ? (accountsWithBalance.find((a) => a.id === accountId)?.balancePrimary ?? 0)
+    : openAccounts.reduce((s, a) => s + a.balancePrimary, 0);
 
   return NextResponse.json({
     accounts: accountsWithBalance,
