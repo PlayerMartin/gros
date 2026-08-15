@@ -82,7 +82,9 @@ export function DashboardView() {
     );
   }
 
-  const currency = data?.primary ?? "EUR";
+  // Amounts shown follow the selected scope: an account's own currency when
+  // filtered, the primary currency otherwise.
+  const currency = data?.displayCurrency ?? data?.primary ?? "EUR";
   const accounts = data?.accounts ?? [];
   const hasAccounts = accounts.some((a) => !a.closed);
   const openAccounts = accounts.filter((a) => !a.closed);
@@ -94,7 +96,7 @@ export function DashboardView() {
         <p className="text-xs uppercase tracking-wide text-muted-2">
           Total balance
         </p>
-        <p className="mt-0.5 text-3xl font-bold tracking-tight">
+        <p className="mt-0.5 text-4xl font-bold tracking-tight">
           {formatCurrency(data?.totalBalance ?? 0, currency)}
         </p>
       </div>
@@ -119,7 +121,7 @@ export function DashboardView() {
                   </p>
                   <p className="text-xs text-muted-2">{a.currency}</p>
                 </div>
-                <p className="font-mono text-sm font-semibold">
+                <p className="font-mono text-base font-semibold">
                   {formatCurrency(a.balance, a.currency)}
                 </p>
               </li>

@@ -70,14 +70,14 @@ export function TransactionList({
               <div className="shrink-0 text-right">
                 <p
                   className={cn(
-                    "font-mono text-sm font-semibold",
+                    "font-mono text-base font-semibold",
                     isIn ? "text-income" : "text-foreground"
                   )}
                 >
                   {isIn ? "+" : "−"}
                   {formatCurrency(tx.amount ?? 0, currency)}
                 </p>
-                <p className="text-[11px] text-muted-2">
+                <p className="text-xs text-muted-2">
                   {new Date(
                     tx.date + "T00:00:00"
                   ).toLocaleDateString(undefined, {

@@ -57,7 +57,7 @@ export function SpendingPie({
                     <p className="truncate text-xs font-medium text-muted">
                       {item.name}
                     </p>
-                    <p className="font-mono text-sm font-semibold">
+                    <p className="font-mono text-base font-semibold">
                       {formatCurrency(Number(item.value), currency)}
                     </p>
                   </div>
@@ -70,7 +70,7 @@ export function SpendingPie({
           <span className="text-[11px] uppercase tracking-wide text-muted-2">
             Total
           </span>
-          <span className="text-lg font-semibold">
+          <span className="text-xl font-semibold">
             {formatCurrency(total, currency)}
           </span>
         </div>
@@ -84,10 +84,10 @@ export function SpendingPie({
               style={{ background: tagColor(d.tagId, d.tagName) }}
             />
             <span className="flex-1 truncate text-muted">{d.tagName}</span>
-            <span className="font-medium">
+            <span className="text-base font-medium">
               {formatCurrency(d.amount, currency)}
             </span>
-            <span className="w-10 text-right text-xs text-muted-2">
+            <span className="w-10 text-right text-sm text-muted-2">
               {total > 0 ? Math.round((d.amount / total) * 100) : 0}%
             </span>
           </li>

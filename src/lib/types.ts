@@ -28,6 +28,8 @@ export interface DashboardData {
   spending: SpendingBucket[];
   history: BalancePoint[];
   primary: string;
+  /** Currency all amounts are expressed in (account currency when filtered). */
+  displayCurrency: string;
   totalBalance: number;
 }
 

@@ -29,15 +29,17 @@ function isVoided(events: EventRow[], eventId: string): boolean {
 
 /**
  * Total spending (out transactions) by tag over a period, converted to the
- * user's primary currency.
+ * user's primary currency (or `currency` when given — pass the filtered
+ * account's currency to get native amounts without exchange-rate lookups).
  */
 export function spendingByTag(
   db: Database.Database,
   userId: string,
-  filters: DashboardFilters = {}
+  filters: DashboardFilters = {},
+  currency?: string
 ): SpendingBucket[] {
   const events = listEventsForReplay(db, userId);
-  const primary = getPrimaryCurrency(db, userId);
+  const primary = currency ?? getPrimaryCurrency(db, userId);
   const accounts = new Map(listAccounts(db, userId).map((a) => [a.id, a]));
 
   const byTag = new Map<string | null, number>();
@@ -87,17 +89,19 @@ export interface BalancePoint {
 }
 
 /**
- * Balance over time, converted to primary currency, for a single account or
- * all accounts combined (net worth).
+ * Balance over time for a single account or all accounts combined (net
+ * worth). Converted to the user's primary currency, or to `currency` when
+ * given — pass the filtered account's currency for native values.
  */
 export function balanceHistory(
   db: Database.Database,
   userId: string,
-  filters: DashboardFilters = {}
+  filters: DashboardFilters = {},
+  currency?: string
 ): BalancePoint[] {
   const events = listEventsForReplay(db, userId);
   const accountId = filters.accountId ?? null;
-  const primary = getPrimaryCurrency(db, userId);
+  const primary = currency ?? getPrimaryCurrency(db, userId);
   const accounts = listAccounts(db, userId);
   const accountMap = new Map(accounts.map((a) => [a.id, a]));
 

@@ -9,9 +9,10 @@ import { convertCurrency } from "@/lib/exchange-rates/service";
 /**
  * Dashboard aggregate. Every account keeps its balance in its own currency
  * (`balance`) plus a converted value (`balancePrimary`), so the UI can show
- * account totals natively. The top-level `totalBalance` is always expressed
- * in the user's primary currency: the selected account's converted balance
- * when a filter is set, otherwise the sum of all open accounts.
+ * account totals natively. When an account filter is set, `displayCurrency`
+ * is that account's currency and `totalBalance`/`history`/`spending` are
+ * native (unconverted); otherwise everything is expressed in the user's
+ * primary currency.
  */
 export async function GET(req: NextRequest) {
   const user = await getSessionUser(req.headers);
@@ -28,6 +29,12 @@ export async function GET(req: NextRequest) {
   const accounts = listAccounts(db, user.userId);
   const balances = computeBalance(db, user.userId);
 
+  // Filtered view speaks the account's own currency; the All view speaks the
+  // primary currency.
+  const displayCurrency = accountId
+    ? (accounts.find((a) => a.id === accountId)?.currency ?? primary)
+    : primary;
+
   const accountsWithBalance = accounts.map((a) => {
     const raw = balances.perAccount[a.id] ?? 0;
     const converted = convertCurrency(db, raw, a.currency, primary);
@@ -42,12 +49,12 @@ export async function GET(req: NextRequest) {
   });
 
   const filters = { accountId, from, to };
-  const spending = spendingByTag(db, user.userId, filters);
-  const history = balanceHistory(db, user.userId, filters);
+  const spending = spendingByTag(db, user.userId, filters, displayCurrency);
+  const history = balanceHistory(db, user.userId, filters, displayCurrency);
 
   const openAccounts = accountsWithBalance.filter((a) => !a.closed);
-  const totalPrimary = accountId
-    ? (accountsWithBalance.find((a) => a.id === accountId)?.balancePrimary ?? 0)
+  const total = accountId
+    ? (accountsWithBalance.find((a) => a.id === accountId)?.balance ?? 0)
     : openAccounts.reduce((s, a) => s + a.balancePrimary, 0);
 
   return NextResponse.json({
@@ -55,6 +62,7 @@ export async function GET(req: NextRequest) {
     spending,
     history,
     primary,
-    totalBalance: Math.round(totalPrimary * 100) / 100,
+    displayCurrency,
+    totalBalance: Math.round(total * 100) / 100,
   });
 }

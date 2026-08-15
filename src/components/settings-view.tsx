@@ -122,7 +122,7 @@ export function SettingsView() {
                     <p className="text-xs text-muted-2">{a.currency}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono text-sm font-semibold">
+                    <p className="font-mono text-base font-semibold">
                       {formatCurrency(a.balance, a.currency)}
                     </p>
                     {!a.closed && (

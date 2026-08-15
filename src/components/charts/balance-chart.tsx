@@ -60,14 +60,14 @@ export function BalanceChart({
           <XAxis
             dataKey="date"
             tickFormatter={fmtDate}
-            tick={{ fill: "#6c6c7a", fontSize: 11 }}
+            tick={{ fill: "#6c6c7a", fontSize: 12 }}
             axisLine={{ stroke: "#26262f" }}
             tickLine={false}
             minTickGap={40}
           />
           <YAxis
             tickFormatter={(v) => compactCurrency(Number(v), currency)}
-            tick={{ fill: "#6c6c7a", fontSize: 11 }}
+            tick={{ fill: "#6c6c7a", fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             width={56}
@@ -84,7 +84,7 @@ export function BalanceChart({
               background: "#1a1a24",
               border: "1px solid #26262f",
               borderRadius: 12,
-              fontSize: 12,
+              fontSize: 13,
               color: "#e8e8ee",
             }}
           />
