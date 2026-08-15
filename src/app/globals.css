@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* Dark-only design system for the finance tracker. */
+:root {
+  --background: #0a0a0f;
+  --surface: #12121a;
+  --surface-2: #1a1a24;
+  --border: #26262f;
+  --foreground: #e8e8ee;
+  --muted: #9a9aa8;
+  --muted-2: #6c6c7a;
+  --accent: #34d399;
+  --accent-2: #10b981;
+  --danger: #f87171;
+  --income: #34d399;
+  --expense: #fb7185;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-danger: var(--danger);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono",
+    Menlo, Consolas, monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thin scrollbars for the dark theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
