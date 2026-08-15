@@ -1,0 +1,31 @@
+# Version control & tooling
+.git
+.gitignore
+AGENTS.md
+.eslintrc*
+.env*
+*.md
+
+# Dependencies & build output (rebuilt inside the image)
+node_modules
+.next
+out
+build
+.pnpm-store
+
+# Local runtime data & logs — mounted as a volume at runtime
+data
+*.log
+*.err
+dev_restart.log
+dev2.log
+srv.log
+mem_before.txt
+ideas.md
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# OS cruft
+.DS_Store
