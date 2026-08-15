@@ -27,9 +27,23 @@ export function BalanceChart({
     );
   }
 
-  const fmt = (d: BalancePoint) => {
-    const date = new Date(d.date + "T00:00:00");
-    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  // Accept whatever recharts hands the axis: the raw date string (category
+  // ticks), a timestamp (number), or a Date. Never emit "Invalid Date".
+  const fmtDate = (v: unknown) => {
+    if (v == null) return "";
+    const s = String(v);
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(s)
+      ? new Date(s + "T00:00:00")
+      : v instanceof Date
+        ? v
+        : typeof v === "number"
+          ? new Date(v)
+          : new Date(s);
+    if (Number.isNaN(date.getTime())) return s;
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   return (
@@ -45,7 +59,7 @@ export function BalanceChart({
           <CartesianGrid stroke="#26262f" strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="date"
-            tickFormatter={fmt}
+            tickFormatter={fmtDate}
             tick={{ fill: "#6c6c7a", fontSize: 11 }}
             axisLine={{ stroke: "#26262f" }}
             tickLine={false}
@@ -62,7 +76,9 @@ export function BalanceChart({
           <Tooltip
             formatter={(value) => formatCurrency(Number(value), currency)}
             labelFormatter={(_, payload) =>
-              payload?.[0]?.payload?.date ? fmt(payload[0].payload as BalancePoint) : ""
+              payload?.[0]?.payload?.date
+                ? fmtDate((payload[0].payload as BalancePoint).date)
+                : ""
             }
             contentStyle={{
               background: "#1a1a24",
