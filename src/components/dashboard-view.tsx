@@ -41,9 +41,15 @@ export function DashboardView() {
     ]);
     setData(d);
     setTags(g.tags);
-    const filtered = accountFilter
+    // Recent activity is always the latest first, regardless of API order.
+    const filtered = (accountFilter
       ? t.transactions.filter((x) => x.accountId === accountFilter)
-      : t.transactions;
+      : t.transactions
+    ).sort(
+      (a, b) =>
+        b.date.localeCompare(a.date) ||
+        b.createdAt.localeCompare(a.createdAt)
+    );
     setTransactions(filtered);
     setLoading(false);
   }, [accountFilter]);
@@ -176,7 +182,7 @@ export function DashboardView() {
         </h2>
         <Card className="p-2">
           <TransactionList
-            transactions={transactions.slice(0, 10)}
+            transactions={transactions.slice(0, 5)}
             accounts={openAccounts}
             onEdit={(tx) => {
               setEditing(tx);
