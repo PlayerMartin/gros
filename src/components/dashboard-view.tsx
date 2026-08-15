@@ -201,6 +201,7 @@ export function DashboardView() {
         tags={tags}
         editing={editing}
         onSaved={handleSaved}
+        onTagCreated={load}
       />
 
       {!hasAccounts && (

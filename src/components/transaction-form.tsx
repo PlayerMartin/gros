@@ -7,10 +7,12 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
+  createTag,
   createTransaction,
   editTransaction,
   createTransfer,
 } from "@/lib/api";
+import { PlusIcon } from "@/components/icons";
 import type { AccountSummary, Tag, Transaction } from "@/lib/types";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -22,6 +24,7 @@ export function TransactionForm({
   tags,
   editing,
   onSaved,
+  onTagCreated,
 }: {
   open: boolean;
   onClose: () => void;
@@ -29,6 +32,7 @@ export function TransactionForm({
   tags: Tag[];
   editing?: Transaction | null;
   onSaved: () => void;
+  onTagCreated?: () => void;
 }) {
   const [mode, setMode] = useState<"entry" | "transfer">("entry");
   const [direction, setDirection] = useState<"in" | "out">("out");
@@ -41,6 +45,10 @@ export function TransactionForm({
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [tagCreating, setTagCreating] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
+  const [tagError, setTagError] = useState<string | null>(null);
+  const [tagSaving, setTagSaving] = useState(false);
 
   const openAccounts = accounts.filter((a) => !a.closed);
   const primaryTag = tags.find((t) => t.name === "Uncategorized");
@@ -55,6 +63,9 @@ export function TransactionForm({
       setNote("");
       setAmount("");
       setTagId(defaultTagId);
+      setTagCreating(false);
+      setNewTagName("");
+      setTagError(null);
       const first = openAccounts[0];
       setAccountId(first?.id ?? "");
       setFromAccountId(first?.id ?? "");
@@ -113,6 +124,24 @@ export function TransactionForm({
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function createNewTag() {
+    const name = newTagName.trim();
+    if (!name) return;
+    setTagError(null);
+    setTagSaving(true);
+    try {
+      const { tag } = await createTag(name);
+      setTagId(tag.id);
+      setNewTagName("");
+      setTagCreating(false);
+      onTagCreated?.();
+    } catch (err) {
+      setTagError(err instanceof Error ? err.message : "Failed to create tag");
+    } finally {
+      setTagSaving(false);
     }
   }
 
@@ -199,13 +228,62 @@ export function TransactionForm({
 
             <div>
               <Label>Tag</Label>
-              <Select value={tagId} onChange={(e) => setTagId(e.target.value)}>
-                {tags.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))}
-              </Select>
+              {tagCreating ? (
+                <div className="flex gap-2">
+                  <Input
+                    autoFocus
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        createNewTag();
+                      } else if (e.key === "Escape") {
+                        setTagCreating(false);
+                        setNewTagName("");
+                        setTagError(null);
+                      }
+                    }}
+                    placeholder="New tag name"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-24 shrink-0"
+                    onClick={createNewTag}
+                    disabled={tagSaving}
+                  >
+                    {tagSaving ? "…" : "Add"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Select
+                    value={tagId}
+                    onChange={(e) => setTagId(e.target.value)}
+                    className="min-w-0 flex-1"
+                  >
+                    {tags.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </Select>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-11 shrink-0 !px-0"
+                    onClick={() => setTagCreating(true)}
+                    aria-label="Create new tag"
+                    title="Create new tag"
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              {tagError && (
+                <p className="mt-1 text-xs text-expense">{tagError}</p>
+              )}
             </div>
           </>
         )}

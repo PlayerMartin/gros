@@ -118,6 +118,7 @@ export function TransactionsView() {
         tags={tags}
         editing={editing}
         onSaved={load}
+        onTagCreated={load}
       />
     </div>
   );

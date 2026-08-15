@@ -91,7 +91,7 @@ export function closeAccount(id: string) {
 export function getTags(): Promise<{ tags: Tag[] }> {
   return http("/api/tags");
 }
-export function createTag(name: string) {
+export function createTag(name: string): Promise<{ tag: Tag }> {
   return http("/api/tags", { method: "POST", body: JSON.stringify({ name }) });
 }
 export function renameTag(id: string, name: string) {
