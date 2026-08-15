@@ -22,7 +22,10 @@ export function CardTitle({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-sm font-semibold text-muted uppercase tracking-wide", className)}
+      className={cn(
+        "text-[11px] font-medium uppercase tracking-[0.16em] text-muted",
+        className
+      )}
       {...props}
     />
   );
@@ -31,7 +34,7 @@ export function CardTitle({
 export function Spinner({ className }: { className?: string }) {
   return (
     <svg
-      className={cn("h-5 w-5 animate-spin text-accent", className)}
+      className={cn("h-5 w-5 animate-spin text-foreground/50", className)}
       viewBox="0 0 24 24"
       fill="none"
     >

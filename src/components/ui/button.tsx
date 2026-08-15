@@ -4,13 +4,15 @@ import type { ButtonHTMLAttributes } from "react";
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
+/* Monochrome chrome: the primary action is ink-on-ivory, every other action is
+   a hairline. Gold and ember are reserved for money figures. */
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent text-[#052014] font-semibold hover:bg-accent/90 active:scale-[0.98]",
+    "bg-foreground text-background font-semibold hover:bg-foreground/90 active:scale-[0.98]",
   secondary:
-    "bg-surface-2 text-foreground hover:bg-surface-2/70 active:scale-[0.98]",
+    "border border-border bg-surface text-foreground hover:border-border-strong hover:bg-surface-2 active:scale-[0.98]",
   ghost: "bg-transparent text-muted hover:text-foreground hover:bg-surface-2/60",
-  danger: "bg-expense/15 text-expense hover:bg-expense/25",
+  danger: "bg-expense/12 text-expense hover:bg-expense/25",
 };
 
 const sizes: Record<Size, string> = {

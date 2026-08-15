@@ -18,11 +18,19 @@ import { TransactionList } from "@/components/transaction-list";
 import { TransactionForm } from "@/components/transaction-form";
 import { OnboardingDialog } from "@/components/onboarding-dialog";
 import type {
-  AccountSummary,
   DashboardData,
   Tag,
   Transaction,
 } from "@/lib/types";
+
+/** Chrome chips: the selected filter inverts to ink-on-ivory, never gold. */
+const chip = (active: boolean) =>
+  cn(
+    "shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors",
+    active
+      ? "border-foreground bg-foreground font-medium text-background"
+      : "border-border text-muted hover:border-border-strong hover:text-foreground"
+  );
 
 export function DashboardView() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -90,21 +98,39 @@ export function DashboardView() {
   const openAccounts = accounts.filter((a) => !a.closed);
 
   return (
-    <div className="space-y-4 p-4">
-      {/* Balance header */}
-      <div className="pt-2">
-        <p className="text-xs uppercase tracking-wide text-muted-2">
+    <div className="space-y-4 p-4 md:grid md:grid-cols-12 md:gap-5 md:space-y-0 md:p-6 lg:p-8">
+      {/* Balance header — the one gold thing on the page */}
+      <div className="pt-2 md:col-span-12 md:pt-3">
+        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-2">
           Total balance
         </p>
-        <p className="mt-0.5 text-4xl font-bold tracking-tight">
+        <p className="mt-2 font-mono text-5xl font-medium leading-none tracking-tight text-gold md:text-6xl">
           {formatCurrency(data?.totalBalance ?? 0, currency)}
         </p>
       </div>
 
+      {/* Account filter chips */}
+      {openAccounts.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 md:col-span-12">
+          <button onClick={() => setAccountFilter("")} className={chip(!accountFilter)}>
+            All
+          </button>
+          {openAccounts.map((a) => (
+            <button
+              key={a.id}
+              onClick={() => setAccountFilter(a.id)}
+              className={chip(accountFilter === a.id)}
+            >
+              {a.name}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Per-account totals — each shown in its own currency */}
       {openAccounts.length > 0 && (
-        <Card>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+        <Card className="md:col-span-4">
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
             Accounts
           </p>
           <ul className="divide-y divide-border">
@@ -114,14 +140,14 @@ export function DashboardView() {
                   <p
                     className={cn(
                       "text-sm font-medium",
-                      accountFilter === a.id && "text-accent",
+                      accountFilter === a.id && "font-semibold text-foreground"
                     )}
                   >
                     {a.name}
                   </p>
                   <p className="text-xs text-muted-2">{a.currency}</p>
                 </div>
-                <p className="font-mono text-base font-semibold">
+                <p className="font-mono text-base font-semibold text-gold">
                   {formatCurrency(a.balance, a.currency)}
                 </p>
               </li>
@@ -130,56 +156,25 @@ export function DashboardView() {
         </Card>
       )}
 
-      {/* Account filter chips */}
-      {openAccounts.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <button
-            onClick={() => setAccountFilter("")}
-            className={cn(
-              "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
-              !accountFilter
-                ? "border-accent bg-accent/10 text-accent"
-                : "border-border text-muted hover:text-foreground",
-            )}
-          >
-            All
-          </button>
-          {openAccounts.map((a) => (
-            <button
-              key={a.id}
-              onClick={() => setAccountFilter(a.id)}
-              className={cn(
-                "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
-                accountFilter === a.id
-                  ? "border-accent bg-accent/10 text-accent"
-                  : "border-border text-muted hover:text-foreground",
-              )}
-            >
-              {a.name}
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* Balance chart */}
-      <Card>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+      <Card className="md:col-span-8">
+        <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
           Balance over time
         </p>
         <BalanceChart data={data?.history ?? []} currency={currency} />
       </Card>
 
       {/* Spending */}
-      <Card>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+      <Card className="md:col-span-5">
+        <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
           Spending by tag
         </p>
         <SpendingPie data={data?.spending ?? []} currency={currency} />
       </Card>
 
       {/* Recent transactions */}
-      <div>
-        <h2 className="mb-1 px-1 text-xs font-semibold uppercase tracking-wide text-muted">
+      <div className="md:col-span-7">
+        <h2 className="mb-1 px-1 text-[11px] font-medium uppercase tracking-[0.16em] text-muted">
           Recent activity
         </h2>
         <Card className="p-2">
@@ -199,7 +194,7 @@ export function DashboardView() {
       {/* Floating add button */}
       <Button
         size="lg"
-        className="fixed right-4 bottom-20 z-30 h-14 w-14 rounded-full !p-0 shadow-lg shadow-accent/20"
+        className="fixed right-4 bottom-20 z-30 h-14 w-14 rounded-full !p-0 shadow-lg shadow-black/40"
         onClick={() => {
           setEditing(null);
           setFormOpen(true);

@@ -12,6 +12,10 @@ import {
 import { compactCurrency, formatCurrency } from "@/lib/utils/currency";
 import type { BalancePoint } from "@/lib/types";
 
+const GRID = "#2a261c";
+const TICK = "#575146";
+const GOLD = "#e3ab50";
+
 export function BalanceChart({
   data,
   currency,
@@ -52,46 +56,47 @@ export function BalanceChart({
         <AreaChart data={data} margin={{ top: 10, right: 4, left: 4, bottom: 0 }}>
           <defs>
             <linearGradient id="balance" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#34d399" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
+              <stop offset="0%" stopColor={GOLD} stopOpacity={0.28} />
+              <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="#26262f" strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid stroke={GRID} strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={fmtDate}
-            tick={{ fill: "#6c6c7a", fontSize: 12 }}
-            axisLine={{ stroke: "#26262f" }}
+            tick={{ fill: TICK, fontSize: 12 }}
+            axisLine={{ stroke: GRID }}
             tickLine={false}
             minTickGap={40}
           />
           <YAxis
             tickFormatter={(v) => compactCurrency(Number(v), currency)}
-            tick={{ fill: "#6c6c7a", fontSize: 12 }}
+            tick={{ fill: TICK, fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             width={56}
             domain={["auto", "auto"]}
           />
           <Tooltip
-            formatter={(value) => formatCurrency(Number(value), currency)}
-            labelFormatter={(_, payload) =>
-              payload?.[0]?.payload?.date
-                ? fmtDate((payload[0].payload as BalancePoint).date)
-                : ""
-            }
-            contentStyle={{
-              background: "#1a1a24",
-              border: "1px solid #26262f",
-              borderRadius: 12,
-              fontSize: 13,
-              color: "#e8e8ee",
+            cursor={{ stroke: GRID, strokeDasharray: "4 4" }}
+            content={({ active, payload }) => {
+              if (!active || !payload || payload.length === 0) return null;
+              const item = payload[0];
+              const date = (item.payload as BalancePoint).date;
+              return (
+                <div className="rounded-xl border border-border bg-surface-2 px-3 py-2 shadow-xl">
+                  <p className="text-xs text-muted">{fmtDate(date)}</p>
+                  <p className="font-mono text-base font-semibold text-gold">
+                    {formatCurrency(Number(item.value), currency)}
+                  </p>
+                </div>
+              );
             }}
           />
           <Area
             type="monotone"
             dataKey="value"
-            stroke="#34d399"
+            stroke={GOLD}
             strokeWidth={2}
             fill="url(#balance)"
           />

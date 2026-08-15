@@ -175,8 +175,10 @@ export function TransactionForm({
                 type="button"
                 onClick={() => setMode(m)}
                 className={cn(
-                  "h-9 rounded-lg text-sm font-medium transition-colors",
-                  mode === m ? "bg-accent text-[#052014]" : "text-muted"
+                  "h-9 rounded-lg text-sm transition-colors",
+                  mode === m
+                    ? "bg-foreground font-medium text-background"
+                    : "text-muted hover:text-foreground"
                 )}
               >
                 {m === "entry" ? "Entry" : "Transfer"}
@@ -219,12 +221,10 @@ export function TransactionForm({
                   type="button"
                   onClick={() => setDirection(d)}
                   className={cn(
-                    "h-9 rounded-lg text-sm font-medium transition-colors",
+                    "h-9 rounded-lg text-sm transition-colors",
                     direction === d
-                      ? d === "out"
-                        ? "bg-expense text-[#1f060a]"
-                        : "bg-accent text-[#052014]"
-                      : "text-muted"
+                      ? "bg-foreground font-medium text-background"
+                      : "text-muted hover:text-foreground"
                   )}
                 >
                   {d === "out" ? "Expense" : "Income"}

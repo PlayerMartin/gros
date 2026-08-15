@@ -36,7 +36,7 @@ export function Dialog({
       />
       <div className="relative z-10 w-full max-w-md rounded-t-3xl border border-border bg-surface p-5 shadow-2xl sm:rounded-2xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{title}</h2>
+          <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
           <button
             onClick={onClose}
             className="rounded-lg p-1 text-muted hover:bg-surface-2 hover:text-foreground"

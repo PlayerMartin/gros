@@ -16,7 +16,6 @@ import { authClient } from "@/lib/auth-client";
 import { Card, Spinner } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { PlusIcon, LogOutIcon } from "@/components/icons";
 import { formatCurrency } from "@/lib/utils/currency";
 import { AccountForm } from "@/components/account-form";
@@ -122,7 +121,7 @@ export function SettingsView() {
                     <p className="text-xs text-muted-2">{a.currency}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono text-base font-semibold">
+                    <p className="font-mono text-base font-semibold tabular-nums text-gold">
                       {formatCurrency(a.balance, a.currency)}
                     </p>
                     {!a.closed && (
@@ -133,7 +132,7 @@ export function SettingsView() {
                             await load();
                           }
                         }}
-                        className="text-[11px] text-muted-2 hover:text-expense"
+                        className="text-[11px] text-muted-2 underline-offset-2 hover:text-ember hover:underline"
                       >
                         Close
                       </button>
@@ -179,7 +178,7 @@ export function SettingsView() {
                       }
                     }}
                     onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-                    className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-sm hover:border-border focus:border-accent/60 focus:bg-surface focus:outline-none"
+                    className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-sm hover:border-border focus:border-foreground/60 focus:bg-surface focus:outline-none"
                     aria-label={`Rename ${t.name}`}
                   />
                   {t.name !== "Uncategorized" && (
@@ -222,7 +221,7 @@ export function SettingsView() {
       )}
 
       {message && (
-        <div className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-full bg-surface-2 px-4 py-2 text-sm shadow-lg">
+        <div className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-full border border-border bg-surface-2 px-4 py-2 text-sm shadow-lg">
           {message}
         </div>
       )}

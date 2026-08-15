@@ -82,6 +82,7 @@ export function AccountForm({
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
             placeholder="0.00"
+            className="font-mono tabular-nums"
           />
         </div>
         {error && (

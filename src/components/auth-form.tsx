@@ -58,7 +58,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-6">
       <div className="mb-8">
-        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-lg font-bold text-[#052014]">
+        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border-strong bg-surface font-mono text-base font-bold text-foreground">
           F
         </div>
         <h1 className="text-2xl font-bold tracking-tight">
@@ -66,7 +66,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </h1>
         <p className="mt-1 text-sm text-muted">
           {mode === "login"
-            ? "Sign in to track your finances."
+            ? "Your own ledger — sign in to keep tracking."
             : "Get started in under a minute."}
         </p>
       </div>
@@ -127,14 +127,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
         {mode === "login" ? (
           <>
             New here?{" "}
-            <Link href="/register" className="font-medium text-accent hover:underline">
+            <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
               Create an account
             </Link>
           </>
         ) : (
           <>
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-accent hover:underline">
+            <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
               Sign in
             </Link>
           </>

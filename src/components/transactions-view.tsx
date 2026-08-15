@@ -17,7 +17,16 @@ import type { AccountSummary, Tag, Transaction } from "@/lib/types";
 
 // Compact field styling for the filter strip (avoids the ui/input heights).
 const filterField =
-  "min-w-0 w-full rounded-lg border border-border bg-surface px-2 text-xs text-foreground placeholder:text-muted-2 outline-none transition-colors focus:border-accent/60 focus:ring-2 focus:ring-accent/20";
+  "min-w-0 w-full rounded-lg border border-border bg-background px-2 text-xs text-foreground placeholder:text-muted-2 outline-none transition-colors focus:border-foreground/60 focus:ring-2 focus:ring-foreground/15";
+
+/** Chrome chips: the selected filter inverts to ink-on-ivory, never gold. */
+const chip = (active: boolean) =>
+  cn(
+    "shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors",
+    active
+      ? "border-foreground bg-foreground font-medium text-background"
+      : "border-border text-muted hover:border-border-strong hover:text-foreground"
+  );
 
 export function TransactionsView() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -144,12 +153,7 @@ export function TransactionsView() {
         <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
           <button
             onClick={() => setAccountFilter("")}
-            className={cn(
-              "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
-              !accountFilter
-                ? "border-accent bg-accent/10 text-accent"
-                : "border-border text-muted hover:text-foreground"
-            )}
+            className={cn(chip(!accountFilter))}
           >
             All
           </button>
@@ -157,12 +161,7 @@ export function TransactionsView() {
             <button
               key={a.id}
               onClick={() => setAccountFilter(a.id)}
-              className={cn(
-                "shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors",
-                accountFilter === a.id
-                  ? "border-accent bg-accent/10 text-accent"
-                  : "border-border text-muted hover:text-foreground"
-              )}
+              className={cn(chip(accountFilter === a.id))}
             >
               {a.name}
             </button>
@@ -188,7 +187,7 @@ export function TransactionsView() {
             <button
               type="button"
               onClick={clearFilters}
-              className="shrink-0 text-[11px] font-medium text-accent hover:underline"
+              className="shrink-0 text-[11px] font-medium text-foreground underline-offset-2 hover:underline"
             >
               Reset
             </button>

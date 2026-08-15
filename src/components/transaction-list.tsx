@@ -43,7 +43,7 @@ export function TransactionList({
               <span
                 className={cn(
                   "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-                  isIn ? "bg-income/15 text-income" : "bg-expense/15 text-expense"
+                  isIn ? "bg-gold/12 text-gold" : "bg-ember/12 text-ember"
                 )}
               >
                 {isIn ? (
@@ -70,8 +70,8 @@ export function TransactionList({
               <div className="shrink-0 text-right">
                 <p
                   className={cn(
-                    "font-mono text-base font-semibold",
-                    isIn ? "text-income" : "text-foreground"
+                    "font-mono text-base font-semibold tabular-nums",
+                    isIn ? "text-gold" : "text-ember"
                   )}
                 >
                   {isIn ? "+" : "−"}
@@ -93,7 +93,7 @@ export function TransactionList({
                 e.stopPropagation();
                 if (confirm("Delete this transaction?")) onDelete(tx.id);
               }}
-              className="mr-1 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center self-center rounded-md text-muted-2 transition-colors hover:bg-expense/15 hover:text-expense"
+              className="mr-1 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center self-center rounded-md text-muted-2 transition-colors hover:bg-ember/15 hover:text-ember"
               aria-label="Delete transaction"
               title="Delete transaction"
             >

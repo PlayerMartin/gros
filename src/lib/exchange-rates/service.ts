@@ -33,7 +33,13 @@ function parseEcbXml(xml: string): ParsedRate[] {
 export async function fetchDailyRates(
   db: Database = getDb()
 ): Promise<RateInfo | null> {
-  const res = await fetch(ECB_URL, { cache: "no-store" });
+  // Hard timeout so a container with dead DNS/egress can't hold a connection
+  // open indefinitely when the scheduler runs. Failure is non-fatal: callers
+  // fall back to same-currency data (see schedule.ts).
+  const res = await fetch(ECB_URL, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
+  });
   if (!res.ok) {
     throw new Error(`ECB fetch failed: ${res.status}`);
   }

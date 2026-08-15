@@ -53,6 +53,15 @@ Deployment: `git clone && npm install && npm start`.
 - shadcn/ui for accessible component primitives.
 - Recharts for pie and line charts.
 
+## Visual identity: gold-on-ink
+
+- Warm near-black charcoal background (`#13110B`), warm ivory type, hairline ink rules.
+- **Chrome is monochrome**: buttons, chips, cards, nav, filters never use gold.
+- **Color is spent on money**: balance/income figures are gold (`#E3AB50`), outflows are ember (`#E07059`). The only other color is data-viz hue (tag palette, donut) where segments must be distinguishable.
+- **Type**: Space Grotesk for UI text, IBM Plex Mono for every money figure (tabular, print-ledger feel). Fonts are vendored in the repo (`src/app/fonts`, full-coverage OFL TTFs from google/fonts, licenses alongside) and served via `next/font/local` — self-hosted, so the Docker build makes no outbound request for type. Full coverage matters: the CZK mark is `Kč` (latin-ext) and Czech tag/account names use ž/š/ř/ě/ů.
+- **Layout**: mobile-first single column; expands to a 12-column grid at ≥`md` (accounts beside the balance chart, spending beside recent activity); bottom nav for all sizes. The main rail narrows to `max-w-md` on phones and widens to `lg:max-w-5xl` on desktop.
+- Selection and keyboard focus are gold (highlight system); chrome never is.
+
 ## Currency display conventions
 
 - The currency mark always follows the amount (`1 000€`, `12.3k€`), never precedes it.
@@ -91,6 +100,10 @@ Deployment: `git clone && npm install && npm start`.
 - Donut charts pin the hover popup to the right of the ring via a fixed Recharts
   `position` (with `allowEscapeViewBox`), so the centered "Total" stays visible
   and the popup does not drift over content.
+- The centered Total figure sizes itself to the formatted length (mono advance
+  ≈ 0.58em; 20px → 10.5px floor) and the hole grows from innerRadius 52 → 66 as
+  a last resort, keeping a 12px clear zone between the figure and the ring so
+  a large balance never slides under it.
 
 ## Snapshots/caching: Postponed
 
