@@ -34,34 +34,40 @@ export function TransactionList({
           : "EUR";
         const isIn = tx.direction === "in";
         return (
-          <li key={tx.id} className="flex items-center gap-3 py-3">
-            <span
-              className={cn(
-                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-                isIn ? "bg-income/15 text-income" : "bg-expense/15 text-expense"
-              )}
+          <li key={tx.id} className="flex items-center">
+            <button
+              type="button"
+              onClick={() => onEdit(tx)}
+              className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 py-3 text-left transition-colors hover:bg-surface-2/50"
             >
-              {isIn ? (
-                <ArrowDownIcon className="h-4 w-4" />
-              ) : (
-                <ArrowUpIcon className="h-4 w-4" />
-              )}
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <p className="truncate text-sm font-medium">
-                  {tx.tagName ?? "Uncategorized"}
-                </p>
-                {tx.accountName && (
-                  <span className="truncate text-xs text-muted-2">
-                    {tx.accountName}
-                  </span>
+              <span
+                className={cn(
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                  isIn ? "bg-income/15 text-income" : "bg-expense/15 text-expense"
+                )}
+              >
+                {isIn ? (
+                  <ArrowDownIcon className="h-4 w-4" />
+                ) : (
+                  <ArrowUpIcon className="h-4 w-4" />
+                )}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-sm font-medium">
+                    {tx.tagName ?? "Uncategorized"}
+                  </p>
+                  {tx.accountName && (
+                    <span className="truncate text-xs text-muted-2">
+                      {tx.accountName}
+                    </span>
+                  )}
+                </div>
+                {tx.note && (
+                  <p className="truncate text-xs text-muted">{tx.note}</p>
                 )}
               </div>
-              {tx.note && <p className="truncate text-xs text-muted">{tx.note}</p>}
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="text-right">
+              <div className="shrink-0 text-right">
                 <p
                   className={cn(
                     "font-mono text-sm font-semibold",
@@ -72,29 +78,27 @@ export function TransactionList({
                   {formatCurrency(tx.amount ?? 0, currency)}
                 </p>
                 <p className="text-[11px] text-muted-2">
-                  {new Date(tx.date + "T00:00:00").toLocaleDateString(undefined, {
+                  {new Date(
+                    tx.date + "T00:00:00"
+                  ).toLocaleDateString(undefined, {
                     month: "short",
                     day: "numeric",
                   })}
                 </p>
               </div>
-              <div className="flex flex-col gap-1">
-                <button
-                  onClick={() => onEdit(tx)}
-                  className="rounded-md px-1.5 py-0.5 text-[11px] text-muted hover:bg-surface-2 hover:text-foreground"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    if (confirm("Delete this transaction?")) onDelete(tx.id);
-                  }}
-                  className="flex items-center justify-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-muted-2 hover:bg-expense/15 hover:text-expense"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            </div>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (confirm("Delete this transaction?")) onDelete(tx.id);
+              }}
+              className="mr-1 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center self-center rounded-md text-muted-2 transition-colors hover:bg-expense/15 hover:text-expense"
+              aria-label="Delete transaction"
+              title="Delete transaction"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </li>
         );
       })}

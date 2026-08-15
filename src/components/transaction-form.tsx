@@ -11,6 +11,7 @@ import {
   createTransaction,
   editTransaction,
   createTransfer,
+  deleteTransaction,
 } from "@/lib/api";
 import { PlusIcon } from "@/components/icons";
 import type { AccountSummary, Tag, Transaction } from "@/lib/types";
@@ -122,6 +123,22 @@ export function TransactionForm({
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteCurrent() {
+    if (!editing) return;
+    if (!confirm("Delete this transaction?")) return;
+    setError(null);
+    setLoading(true);
+    try {
+      await deleteTransaction(editing.id);
+      onSaved();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete");
     } finally {
       setLoading(false);
     }
@@ -321,7 +338,18 @@ export function TransactionForm({
           <p className="rounded-lg bg-expense/10 px-3 py-2 text-sm text-expense">{error}</p>
         )}
 
-        <div className="flex gap-3 pt-1">
+        <div className="flex items-center gap-3 pt-1">
+          {editing && (
+            <Button
+              type="button"
+              variant="danger"
+              className="flex-1"
+              onClick={deleteCurrent}
+              disabled={loading}
+            >
+              Delete
+            </Button>
+          )}
           <Button
             type="button"
             variant="ghost"
