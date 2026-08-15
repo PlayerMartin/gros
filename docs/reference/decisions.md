@@ -53,6 +53,45 @@ Deployment: `git clone && npm install && npm start`.
 - shadcn/ui for accessible component primitives.
 - Recharts for pie and line charts.
 
+## Currency display conventions
+
+- The currency mark always follows the amount (`1 000€`, `12.3k€`), never precedes it.
+- Per-account totals always show in that account's own currency — the dashboard
+  Accounts card and the settings list never convert them.
+- The All view reports everything in the primary currency (converted).
+  Filtering the dashboard to one account switches the header, charts and
+  spending to that account's native currency with no FX conversion.
+- Money figures are one type-scale step larger than labels everywhere, for
+  mobile readability.
+
+## Tag colors
+
+- Deterministic per-tag color: hash of the tag id into a 10-color palette, so a
+  tag's color never shifts when other tags or transactions are added.
+- "Uncategorized" (seeded tag or null id) is locked to a fixed neutral gray in
+  every view.
+- Shared implementation in `lib/utils/colors.ts` so all colored views stay
+  consistent.
+
+## Whole-row transaction editing
+
+- A transaction row is a real `<button>`; clicking anywhere opens the editor.
+- Delete is available both from the edit dialog and via a compact ✕ on the row.
+- Replaced the earlier per-row "Edit" button + confirm flow.
+
+## Currency-change propagation
+
+- API client fetches use `cache: no-store` so a stale merged response can never
+  be served after a settings change.
+- Settings dispatches a `finance:currency-changed` window event; dashboard and
+  activity views listen and re-fetch in place — no refresh or navigation needed.
+
+## Donut tooltip placement
+
+- Donut charts pin the hover popup to the right of the ring via a fixed Recharts
+  `position` (with `allowEscapeViewBox`), so the centered "Total" stays visible
+  and the popup does not drift over content.
+
 ## Snapshots/caching: Postponed
 
 - Replaying even 10k events is milliseconds in SQLite.
@@ -66,3 +105,4 @@ Deployment: `git clone && npm install && npm start`.
 → [Tech stack](../technical/stack.md)
 → [Event sourcing implementation](../technical/event-sourcing.md)
 → [Auth configuration](../technical/auth.md)
+→ [Feature behavior](../product/features.md)

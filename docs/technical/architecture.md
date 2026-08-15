@@ -36,9 +36,11 @@ lib/
 │   ├── service.ts           # fetchDailyRates, convertCurrency
 │   └── schedule.ts          # Server-start + daily 03:00 fetch scheduler
 ├── analytics/
-│   └── service.ts           # spendingByTag, balanceHistory (dashboard queries)
+│   └── service.ts           # spendingByTag, balanceHistory (dashboard queries;
+│                            #   optional target currency → native filtered views)
 └── utils/
-    └── currency.ts          # Formatting helpers
+    ├── currency.ts          # Amount + compact formatting (symbol after number)
+    └── colors.ts            # Stable per-tag colors, fixed Uncategorized gray
 ```
 
 → [Stack and dependencies](stack.md)
