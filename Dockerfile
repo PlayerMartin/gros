@@ -19,11 +19,11 @@ ARG BUN_VERSION=1.3.14
 FROM oven/bun:${BUN_VERSION} AS bun-portable
 ARG BUN_VERSION
 RUN apt-get update \
- && apt-get install -y --no-install-recommends curl unzip \
+ && apt-get install -y --no-install-recommends ca-certificates curl unzip \
  && rm -rf /var/lib/apt/lists/* \
  && if [ "$(uname -m)" = "x86_64" ] && ! grep -q avx2 /proc/cpuinfo; then \
       cd /tmp \
-      && curl -fsSL "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64-baseline.zip" -o bun-base.zip \
+      && curl -fsSL --retry 3 "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64-baseline.zip" -o bun-base.zip \
       && unzip -q bun-base.zip \
       && install -m 0755 bun-linux-x64-baseline/bun /usr/local/bin/bun \
       && rm -rf bun-linux-x64-baseline bun-base.zip \
