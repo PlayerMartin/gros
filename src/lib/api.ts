@@ -7,6 +7,7 @@ import type {
 
 async function http<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
+    cache: "no-store",
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   });

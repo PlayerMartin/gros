@@ -82,6 +82,9 @@ export function SettingsView() {
                 setCurrency(next);
                 await saveSettings(next);
                 flash("Primary currency updated");
+                // Tell every mounted view (dashboard, activity, …) to re-sync
+                // its currency display immediately.
+                window.dispatchEvent(new CustomEvent("finance:currency-changed"));
                 router.refresh();
               }}
             >

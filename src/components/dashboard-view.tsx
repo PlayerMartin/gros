@@ -53,6 +53,13 @@ export function DashboardView() {
     load().catch(() => setLoading(false));
   }, [load]);
 
+  // Re-sync whenever the user changes the primary currency elsewhere.
+  useEffect(() => {
+    const sync = () => load();
+    window.addEventListener("finance:currency-changed", sync);
+    return () => window.removeEventListener("finance:currency-changed", sync);
+  }, [load]);
+
   async function handleDelete(id: string) {
     await deleteTransaction(id);
     await load();
