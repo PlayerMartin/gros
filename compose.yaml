@@ -1,8 +1,8 @@
 services:
   app:
     build: .
-    image: finance-analysys:local
-    container_name: finance-analysys
+    image: gros:local
+    container_name: gros
     ports:
       - "3000:3000"
     env_file:

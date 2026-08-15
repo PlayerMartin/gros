@@ -53,7 +53,7 @@ const plexMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Fold · Personal Finance",
+  title: "Groš · Personal Finance",
   description: "A self-hosted personal finance tracker with event sourcing.",
 };
 

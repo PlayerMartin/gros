@@ -1,4 +1,4 @@
-# Fold · Personal Finance
+# Groš · Personal Finance
 
 A self-hosted, open-source personal finance tracker. Single Next.js process
 running on the **Bun runtime**, one SQLite database (`bun:sqlite`), deployed
@@ -7,6 +7,10 @@ with Docker in one command.
 Built on **event sourcing**: every mutation is an immutable event, and balances
 and reports are derived by replay. Multi-account, multi-currency (EUR/CZK with
 daily ECB rates), multi-user with full isolation.
+
+The name comes from the **groš**, the small silver coin of the medieval Czech
+lands — a deliberate record of modest, well-kept amounts. No subscriptions,
+no sync, no noise.
 
 ## Stack
 

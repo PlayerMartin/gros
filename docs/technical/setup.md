@@ -42,7 +42,7 @@ crashes the Bun runtime.
 ## Scaffold
 
 ```
-npx create-next-app@latest finance-analysys --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
+npx create-next-app@latest gros --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
 ```
 
 ## Dependencies

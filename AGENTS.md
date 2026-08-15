@@ -1,4 +1,4 @@
-# AGENTS.md — Finance Analysis Tool
+# AGENTS.md — Groš · Personal Finance
 
 Self-hosted personal finance tracker: Next.js app router + better-sqlite3 + Better Auth, event sourcing with SQLite, one-command deploy.
 

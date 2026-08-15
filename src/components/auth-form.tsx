@@ -59,7 +59,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     <div className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center px-6">
       <div className="mb-8">
         <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border-strong bg-surface font-mono text-base font-bold text-foreground">
-          F
+          G
         </div>
         <h1 className="text-2xl font-bold tracking-tight">
           {mode === "login" ? "Welcome back" : "Create your account"}

@@ -5,6 +5,13 @@ Next.js process backed by SQLite — zero external dependencies, one command to
 deploy. It is the simplest possible alternative to overcomplicated solutions
 like Firefly III and Actual Budget.
 
+## Name
+
+**Groš** (pron. *grosh*) is the small silver coin of the medieval Czech lands
+(from Latin *grossus*, "thick coin"). The name is a promise: deliberate
+entries, modest amounts, carefully kept — the opposite of an over-engineered
+finance dashboard.
+
 ## Core design
 
 - **One process, one database.** No containers, no orchestration, no external services.
