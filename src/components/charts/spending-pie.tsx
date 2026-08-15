@@ -2,20 +2,8 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency } from "@/lib/utils/currency";
+import { tagColor } from "@/lib/utils/colors";
 import type { SpendingBucket } from "@/lib/types";
-
-const PALETTE = [
-  "#34d399",
-  "#60a5fa",
-  "#fbbf24",
-  "#fb7185",
-  "#a78bfa",
-  "#34d0d3",
-  "#f97316",
-  "#f472b6",
-  "#4ade80",
-  "#818cf8",
-];
 
 export function SpendingPie({
   data,
@@ -24,7 +12,11 @@ export function SpendingPie({
   data: SpendingBucket[];
   currency: string;
 }) {
-  const chart = data.map((d) => ({ name: d.tagName, value: d.amount }));
+  const chart = data.map((d) => ({
+    tagId: d.tagId,
+    name: d.tagName,
+    value: d.amount,
+  }));
   const total = data.reduce((s, d) => s + d.amount, 0);
 
   if (data.length === 0) {
@@ -50,18 +42,27 @@ export function SpendingPie({
               strokeWidth={0}
             >
               {chart.map((_, i) => (
-                <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
+                <Cell key={i} fill={tagColor(chart[i].tagId, chart[i].name)} />
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{
-                background: "#1a1a24",
-                border: "1px solid #26262f",
-                borderRadius: 12,
-                fontSize: 12,
-                color: "#e8e8ee",
+              cursor={false}
+              position={{ x: 178, y: 112 }}
+              allowEscapeViewBox={{ x: true, y: true }}
+              content={({ active, payload }) => {
+                if (!active || !payload || payload.length === 0) return null;
+                const item = payload[0];
+                return (
+                  <div className="min-w-[9rem] max-w-[13rem] rounded-xl border border-border bg-surface-2 px-3 py-2 shadow-xl">
+                    <p className="truncate text-xs font-medium text-muted">
+                      {item.name}
+                    </p>
+                    <p className="font-mono text-sm font-semibold">
+                      {formatCurrency(Number(item.value), currency)}
+                    </p>
+                  </div>
+                );
               }}
-              formatter={(value) => formatCurrency(Number(value), currency)}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -76,11 +77,11 @@ export function SpendingPie({
       </div>
 
       <ul className="space-y-2">
-        {data.map((d, i) => (
+        {data.map((d) => (
           <li key={d.tagId ?? "uncat"} className="flex items-center gap-2 text-sm">
             <span
               className="h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{ background: PALETTE[i % PALETTE.length] }}
+              style={{ background: tagColor(d.tagId, d.tagName) }}
             />
             <span className="flex-1 truncate text-muted">{d.tagName}</span>
             <span className="font-medium">
