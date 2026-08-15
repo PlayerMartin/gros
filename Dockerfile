@@ -3,11 +3,38 @@
 # Multi-stage build: install with pnpm, build & run with the Bun runtime.
 # The app has zero native modules (bun:sqlite is built into the runtime),
 # so no compiler toolchain is needed anywhere in this image.
+#
+# CPU portability: Bun's official Linux x64 binary targets the Haswell
+# architecture (requires AVX2, 2013+) and dies with SIGILL ("Illegal
+# instruction", exit 132) on older CPUs or VMs that mask CPU features — the
+# production host here is a Fedora box without AVX2. The `bun-portable` stage
+# below overlays the *baseline* build (Nehalem target, no AVX2 required) on
+# hosts that need it; every other stage copies that same binary.
+
+ARG BUN_VERSION=1.3.14
+
+# ---------------------------------------------------------------------------
+# bun-portable — /usr/local/bin/bun that runs on pre-Haswell x86_64 CPUs
+# ---------------------------------------------------------------------------
+FROM oven/bun:${BUN_VERSION} AS bun-portable
+ARG BUN_VERSION
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends curl unzip \
+ && rm -rf /var/lib/apt/lists/* \
+ && if [ "$(uname -m)" = "x86_64" ] && ! grep -q avx2 /proc/cpuinfo; then \
+      cd /tmp \
+      && curl -fsSL "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64-baseline.zip" -o bun-base.zip \
+      && unzip -q bun-base.zip \
+      && install -m 0755 bun-linux-x64-baseline/bun /usr/local/bin/bun \
+      && rm -rf bun-linux-x64-baseline bun-base.zip \
+      && echo "host lacks AVX2 -> using baseline bun ${BUN_VERSION}"; \
+    fi
 
 # ---------------------------------------------------------------------------
 # deps — resolve & install all dependencies (including dev, for the build)
 # ---------------------------------------------------------------------------
-FROM oven/bun:1.3 AS deps
+FROM oven/bun:${BUN_VERSION} AS deps
+COPY --from=bun-portable /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 
 # pnpm is the package manager (matching the repo); install it via Bun itself.
@@ -19,7 +46,8 @@ RUN pnpm install --frozen-lockfile
 # ---------------------------------------------------------------------------
 # deps-prod — production-only dependencies for the lean runtime image
 # ---------------------------------------------------------------------------
-FROM oven/bun:1.3 AS deps-prod
+FROM oven/bun:${BUN_VERSION} AS deps-prod
+COPY --from=bun-portable /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 
 RUN bun add -g pnpm@10.28.2
@@ -30,7 +58,8 @@ RUN pnpm install --prod --frozen-lockfile
 # ---------------------------------------------------------------------------
 # builder: run `next build` under the Bun runtime inside /app
 # ---------------------------------------------------------------------------
-FROM oven/bun:1.3 AS builder
+FROM oven/bun:${BUN_VERSION} AS builder
+COPY --from=bun-portable /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -44,7 +73,8 @@ RUN bun --bun run build
 # ---------------------------------------------------------------------------
 # runtime: minimal image — baked .next output + prod node_modules only
 # ---------------------------------------------------------------------------
-FROM oven/bun:1.3 AS runner
+FROM oven/bun:${BUN_VERSION} AS runner
+COPY --from=bun-portable /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 
 ENV NODE_ENV=production
